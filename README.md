@@ -18,7 +18,10 @@ Note: then, need to add require statements to hardhat.config.js
 -   Biggest change in VRF version 2 is that instead of funding contract with link (VRF 1 model), instead now funding subscription, an account that allows you to fund multiple contracts
 -   Happens in two parts: request the random words, then fulfill random words - this being a two-part process helps prevent hacking/breaking the randomness of the process
 -   The vrfCoordinator is the address of the contract that does the random number verification
-
+-   How to use keepers network to automate parts of our code, based on a trigger we define:
+>   need to make sure our contract has two functions: checkUpkeep (checks if the contract requires work to be done) and performUpkeep (perform the work on the contract, if instructed by checkUpkeep)
+>>  checkUpkeep is run off-chain by a node from the chainlink keeper network
+>>  performUpkeep: where we verify that things are correct and should run on chain
 ## Other notes:
 -   If we want an address to be able to receive tokens (whether we're receiving or sending), the address needs to have the payable keyword
 -   hardhat-shorthand is an NPM package that will allow us to be able to type "hh compile" rather than "yarn hardhat compile", and similar commands; to install, yarn global add hardhat-shorthand (correction: that installation command does not work; use npm install --global hardhat-shorthand)
