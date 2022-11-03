@@ -108,29 +108,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         s_players.push(payable(msg.sender)); 
         // emit an event since a dynamic object (our list of players) changed
         emit raffle_enter(msg.sender);
-
     }
-
-    // pick a verifiably random winner (chainlink for randomness), will be auto-called by chainlink keepers network
-    // external: a little cheaper than public
-    function request_random_winner() external {
-        // make sure people can't jump in while this request is happening
-        s_raffle_state = RaffleState.CALCULATING;
-        // using our coordinator, request the random number
-        // returns a uint256 request id defining who's requesting, etc
-        uint256 request_id = i_vrfCoordinator.requestRandomWords(
-            i_gas_lane, // can call this the gas lane or key hash
-            i_subscription_id,
-            NUM_REQUEST_CONFIRMATIONS,
-            i_callback_gas_limit,
-            NUM_WORDS
-        );
-        // emit an event saying a winner was requested
-        emit raffle_winner_request(request_id);
-
-        // once we get our random number, do something with it
-    }
-    // in an automated way, have winner selected every x amount of time (chainlink keepers)
 
     // "words" doesn't mean words; it can also be numbers
     // internal: 
@@ -183,14 +161,31 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
         // use all these bools to check if upkeep is needed
         upkeepNeeded = (is_time_passed && has_player && has_balance && is_open);
+        return (upkeepNeeded, "0x0"); // need 0x0 because return expects bool and then bytes
     }
 
     // need to make sure this is only called when checkUpkeep returns true
+    // pick a verifiably random winner (chainlink for randomness), will be auto-called by chainlink keepers network
+    // external: a little cheaper than public
+    // in an automated way, have winner selected every x amount of time (chainlink keepers)
     function performUpkeep(bytes calldata /*performData*/) external override {
         (bool upkeepNeeded, ) = checkUpkeep("");
         if (!upkeepNeeded) {
             revert Raffle__UpkeepNotNeeded(address(this).balance, s_players.length, uint256(s_raffle_state));
         }
+        // make sure people can't jump in while this request is happening
+        s_raffle_state = RaffleState.CALCULATING;
+        // using our coordinator, request the random number
+        // returns a uint256 request id defining who's requesting, etc
+        uint256 request_id = i_vrfCoordinator.requestRandomWords(
+            i_gas_lane, // can call this the gas lane or key hash
+            i_subscription_id,
+            NUM_REQUEST_CONFIRMATIONS,
+            i_callback_gas_limit,
+            NUM_WORDS
+        );
+        // emit an event saying a winner was requested
+        emit raffle_winner_request(request_id);
     }
 
     // GETTERS (view/pure functions)
@@ -203,4 +198,5 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     // this isn't reading from storage, so can be pure
     function get_num_words() public pure returns(uint32) {return NUM_WORDS;}
     function get_num_request_confirmations() public pure returns(uint16) {return NUM_REQUEST_CONFIRMATIONS;}
+    function get_interval() public view returns(uint256) {return i_interval;}
 }

@@ -25,3 +25,9 @@ Note: then, need to add require statements to hardhat.config.js
 ## Other notes:
 -   If we want an address to be able to receive tokens (whether we're receiving or sending), the address needs to have the payable keyword
 -   hardhat-shorthand is an NPM package that will allow us to be able to type "hh compile" rather than "yarn hardhat compile", and similar commands; to install, yarn global add hardhat-shorthand (correction: that installation command does not work; use npm install --global hardhat-shorthand)
+
+## Resolving errors:
+-   If you get something that looks like this "TypeError: Cannot read properties of undefined (reading 'emit')" when trying to run tests using expect, probably need to move parentheses around
+>   the syntax is expect(some_function()).to...
+-   Error: VM Exception while processing transaction: reverted with custom error 'InvalidConsumer()'
+>   update the chainlink version: npm i --save-dev @chainlink/contracts@0.4.0
