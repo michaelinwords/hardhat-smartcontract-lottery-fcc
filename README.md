@@ -22,6 +22,7 @@ Note: then, need to add require statements to hardhat.config.js
 >   need to make sure our contract has two functions: checkUpkeep (checks if the contract requires work to be done) and performUpkeep (perform the work on the contract, if instructed by checkUpkeep)
 >>  checkUpkeep is run off-chain by a node from the chainlink keeper network
 >>  performUpkeep: where we verify that things are correct and should run on chain
+
 ## Other notes:
 -   If we want an address to be able to receive tokens (whether we're receiving or sending), the address needs to have the payable keyword
 -   hardhat-shorthand is an NPM package that will allow us to be able to type "hh compile" rather than "yarn hardhat compile", and similar commands; to install, yarn global add hardhat-shorthand (correction: that installation command does not work; use npm install --global hardhat-shorthand)
@@ -32,3 +33,4 @@ Note: then, need to add require statements to hardhat.config.js
 >   the syntax is expect(some_function()).to...
 -   Error: VM Exception while processing transaction: reverted with custom error 'InvalidConsumer()'
 >   update the chainlink version: npm i --save-dev @chainlink/contracts@0.4.0
+-   If when running the 99-update-front-end.js script, it says there's a problem with JSON.parse and "SyntaxError: Unexpected end of JSON input", make sure the json files I'm trying to write to (abi.json, etc) only have {} as their content, or {} with a newline inside
